@@ -117,10 +117,10 @@ Running "Link prev"
     When all tests pass, output should look similar to the capture
     above.  Each test case is run in four different ways:
 
-    * specifying a specific list of bucket/key pairs ("discrete entries")
-    * processing an entire bucket ("full bucket")
-    * using keyfilters ("filtered bucket")
-    * specifying a non-existent bucket/key pair ("missing object")
+    + specifying a specific list of bucket/key pairs ("discrete entries")
+    + processing an entire bucket ("full bucket")
+    + using keyfilters ("filtered bucket")
+    + specifying a non-existent bucket/key pair ("missing object")
 
     Passing tests should print "OK" and an execution time (in
     milliseconds), while failing tests will print "FAIL".
@@ -136,8 +136,7 @@ Running "Link prev"
    input set.  It is generally a good idea to specify the same =-k=
    for your populate and test-run phases -- the full-bucket and
    filtered-bucket tests will fail validation if you do otherwise.
-   This option should be specified as an integer, and it defaults to
-   1000.
+   This option should be specified as an integer, and it defaults to 1000.
 
    The next option is =-b=, the "object size".  This option is only
    used in the populate phase.  It specifies how large the value of

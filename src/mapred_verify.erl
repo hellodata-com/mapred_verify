@@ -85,7 +85,8 @@ verify_job(Client, Bucket, KeyCount, Label, JobDesc, Verifier) ->
     Tests = [{"discrete entries", fun verify_entries_job/5},
              {"full bucket mapred", fun verify_bucket_job/5},
              {"filtered bucket mapred", fun verify_filter_job/5},
-             {"missing object", fun verify_missing_job/5}],
+             {"missing object", fun verify_missing_job/5},
+             {"missing object twice", fun verify_missing_twice_job/5}],
     io:format("Running ~p~n", [Label]),
     lists:foreach(
       fun({Type, Fun}) ->
@@ -101,6 +102,16 @@ verify_job(Client, Bucket, KeyCount, Label, JobDesc, Verifier) ->
 
 verify_missing_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
     Inputs = [{<<"mrv_missing">>, <<"mrv_missing">>}],
+    Start = erlang:now(),
+    {ok, Result} = Client:mapred(Inputs, JobDesc, 120000),
+    End = erlang:now(),
+    %% below, 0 == length of *existing* inputs
+    {mapred_verifiers:Verifier(missing, Result, 0),
+     erlang:round(timer:now_diff(End, Start) / 1000)}.
+
+verify_missing_twice_job(Client, _Bucket, _KeyCount, JobDesc, Verifier) ->
+    Inputs = [{<<"mrv_missing">>, <<"mrv_missing">>},
+              {<<"mrv_missing">>, <<"mrv_missing">>}],
     Start = erlang:now(),
     {ok, Result} = Client:mapred(Inputs, JobDesc, 120000),
     End = erlang:now(),

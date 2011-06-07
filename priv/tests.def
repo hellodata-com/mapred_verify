@@ -6,84 +6,84 @@
    {reduce,{modfun, riak_kv_mapreduce, reduce_sum},              none,true}],
   simple}}.
 
-%%incomplete%%{"JS/JS",
-%%incomplete%% {[{map,    {jsfun, <<"Riak.mapValuesJson">>}, none, false},
-%%incomplete%%   {reduce, {jsfun, <<"Riak.reduceSum">>},     none, true}],
-%%incomplete%%  simple}}.
-%%incomplete%%
-%%incomplete%%{"JS/Erlang",
-%%incomplete%% {[{map,    {jsfun, <<"Riak.mapValuesJson">>},       none, false},
-%%incomplete%%   {reduce, {modfun, riak_kv_mapreduce, reduce_sum}, none, true}],
-%%incomplete%%  simple}}.
-%%incomplete%%
-%%incomplete%%{"Erlang/JS",
-%%incomplete%% {[{map,    {modfun, riak_kv_mapreduce, map_object_value},
-%%incomplete%%    <<"filter_notfound">>, false},
-%%incomplete%%   {reduce, {jsfun, <<"Riak.reduceSort">>},                none, true}],
-%%incomplete%%  sorted}}.
-%%incomplete%%
-%%incomplete%%{"JS/Erlang/JS",
-%%incomplete%% {[{map,    {jsfun, <<"Riak.mapValuesJson">>},        none, false},
-%%incomplete%%   {reduce, {modfun, riak_kv_mapreduce, reduce_sort}, none, false},
-%%incomplete%%   {reduce, {jsfun, <<"Riak.reduceSum">>},            none, true}],
-%%incomplete%%  simple}}.
-%%incomplete%%
-%%incomplete%%{"Erlang/JS/Erlang",
-%%incomplete%% {[{map, {modfun, riak_kv_mapreduce, map_object_value},
-%%incomplete%%    <<"filter_notfound">>, false},
-%%incomplete%%   {reduce, {jsanon,
-%%incomplete%%             <<"function(v) {
-%%incomplete%%                values = Riak.filterNotFound(v);
-%%incomplete%%                return values.map(
-%%incomplete%%                  function(value) {
-%%incomplete%%                    if (typeof value === 'string') {
-%%incomplete%%                      return JSON.parse(value);
-%%incomplete%%                    } else {
-%%incomplete%%                      return value;
-%%incomplete%%                    }
-%%incomplete%%                  });}">>},
-%%incomplete%%                                                        none, false},
-%%incomplete%%   {reduce, {modfun, riak_kv_mapreduce, reduce_sum},    none, true}],
-%%incomplete%%  simple}}.
-%%incomplete%%
-%%incomplete%%{"Erlang/JS/JS",
-%%incomplete%% {[{map, {modfun, riak_kv_mapreduce, map_object_value},
-%%incomplete%%    <<"filter_notfound">>, false},
-%%incomplete%%   {reduce, {jsanon,
-%%incomplete%%             <<"function(v) {
-%%incomplete%%                values = Riak.filterNotFound(v);
-%%incomplete%%                return values.map(
-%%incomplete%%                  function(value) {
-%%incomplete%%                    if (typeof value === 'string') {
-%%incomplete%%                      return JSON.parse(value);
-%%incomplete%%                    } else {
-%%incomplete%%                      return value;
-%%incomplete%%                    }
-%%incomplete%%                  });}">>},
-%%incomplete%%                                                        none, false},
-%%incomplete%%   {reduce, {jsfun, <<"Riak.reduceSum">>},              none, true}],
-%%incomplete%%  simple}}.
+{"JS/JS",
+ {[{map,    {jsfun, <<"Riak.mapValuesJson">>}, none, false},
+   {reduce, {jsfun, <<"Riak.reduceSum">>},     none, true}],
+  simple}}.
+
+{"JS/Erlang",
+ {[{map,    {jsfun, <<"Riak.mapValuesJson">>},       none, false},
+   {reduce, {modfun, riak_kv_mapreduce, reduce_sum}, none, true}],
+  simple}}.
+
+{"Erlang/JS",
+ {[{map,    {modfun, riak_kv_mapreduce, map_object_value},
+    <<"filter_notfound">>, false},
+   {reduce, {jsfun, <<"Riak.reduceSort">>},                none, true}],
+  sorted}}.
+
+{"JS/Erlang/JS",
+ {[{map,    {jsfun, <<"Riak.mapValuesJson">>},        none, false},
+   {reduce, {modfun, riak_kv_mapreduce, reduce_sort}, none, false},
+   {reduce, {jsfun, <<"Riak.reduceSum">>},            none, true}],
+  simple}}.
+
+%%slf-has-errors-2011-06-07%%{"Erlang/JS/Erlang",
+%%slf-has-errors-2011-06-07%% {[{map, {modfun, riak_kv_mapreduce, map_object_value},
+%%slf-has-errors-2011-06-07%%    <<"filter_notfound">>, false},
+%%slf-has-errors-2011-06-07%%   {reduce, {jsanon,
+%%slf-has-errors-2011-06-07%%             <<"function(v) {
+%%slf-has-errors-2011-06-07%%                values = Riak.filterNotFound(v);
+%%slf-has-errors-2011-06-07%%                return values.map(
+%%slf-has-errors-2011-06-07%%                  function(value) {
+%%slf-has-errors-2011-06-07%%                    if (typeof value === 'string') {
+%%slf-has-errors-2011-06-07%%                      return JSON.parse(value);
+%%slf-has-errors-2011-06-07%%                    } else {
+%%slf-has-errors-2011-06-07%%                      return value;
+%%slf-has-errors-2011-06-07%%                    }
+%%slf-has-errors-2011-06-07%%                  });}">>},
+%%slf-has-errors-2011-06-07%%                                                        none, false},
+%%slf-has-errors-2011-06-07%%   {reduce, {modfun, riak_kv_mapreduce, reduce_sum},    none, true}],
+%%slf-has-errors-2011-06-07%%  simple}}.
+%%slf-has-errors-2011-06-07%%
+%%slf-has-errors-2011-06-07%%{"Erlang/JS/JS",
+%%slf-has-errors-2011-06-07%% {[{map, {modfun, riak_kv_mapreduce, map_object_value},
+%%slf-has-errors-2011-06-07%%    <<"filter_notfound">>, false},
+%%slf-has-errors-2011-06-07%%   {reduce, {jsanon,
+%%slf-has-errors-2011-06-07%%             <<"function(v) {
+%%slf-has-errors-2011-06-07%%                values = Riak.filterNotFound(v);
+%%slf-has-errors-2011-06-07%%                return values.map(
+%%slf-has-errors-2011-06-07%%                  function(value) {
+%%slf-has-errors-2011-06-07%%                    if (typeof value === 'string') {
+%%slf-has-errors-2011-06-07%%                      return JSON.parse(value);
+%%slf-has-errors-2011-06-07%%                    } else {
+%%slf-has-errors-2011-06-07%%                      return value;
+%%slf-has-errors-2011-06-07%%                    }
+%%slf-has-errors-2011-06-07%%                  });}">>},
+%%slf-has-errors-2011-06-07%%                                                        none, false},
+%%slf-has-errors-2011-06-07%%   {reduce, {jsfun, <<"Riak.reduceSum">>},              none, true}],
+%%slf-has-errors-2011-06-07%%  simple}}.
 
 {"Erlang map",
  {[{map, {modfun, riak_kv_mapreduce, map_object_value},
     <<"include_notfound">>, true}],
   map}}.
 
-%%incomplete%%{"JS map",
-%%incomplete%% {[{map, {jsfun, <<"Riak.mapValuesJson">>}, none, true}],
-%%incomplete%%  map}}.
-%%incomplete%%
-%%incomplete%%{"Erlang/JS Link prev",
-%%incomplete%% {[{link, '_', <<"prev">>,               false},
-%%incomplete%%   {map, {jsanon,
-%%incomplete%%          <<"function(v,d) {
-%%incomplete%%                if (d == 'prev')
-%%incomplete%%                   return [v.key];
-%%incomplete%%                else
-%%incomplete%%                   return [];
-%%incomplete%%             }">>},
-%%incomplete%%                                   none, true}],
-%%incomplete%%  map}}.
+%%slf-has-errors-2011-06-07%%{"JS map",
+%%slf-has-errors-2011-06-07%% {[{map, {jsfun, <<"Riak.mapValuesJson">>}, none, true}],
+%%slf-has-errors-2011-06-07%%  map}}.
+%%slf-has-errors-2011-06-07%%
+%%slf-has-errors-2011-06-07%%{"Erlang/JS Link prev",
+%%slf-has-errors-2011-06-07%% {[{link, '_', <<"prev">>,               false},
+%%slf-has-errors-2011-06-07%%   {map, {jsanon,
+%%slf-has-errors-2011-06-07%%          <<"function(v,d) {
+%%slf-has-errors-2011-06-07%%                if (d == 'prev')
+%%slf-has-errors-2011-06-07%%                   return [v.key];
+%%slf-has-errors-2011-06-07%%                else
+%%slf-has-errors-2011-06-07%%                   return [];
+%%slf-has-errors-2011-06-07%%             }">>},
+%%slf-has-errors-2011-06-07%%                                   none, true}],
+%%slf-has-errors-2011-06-07%%  map}}.
 
 {"Erlang/Erlang link prev",
 {[{link, '_', <<"prev">>,               false},

@@ -117,8 +117,7 @@ verify_missing_job(Client, _Bucket, _KeyCount, JobDesc, Verifier) ->
     Start = erlang:now(),
     {ok, Result} = Client:mapred(Inputs, JobDesc, 120000),
     End = erlang:now(),
-    %% below, 0 == length of *existing* inputs
-    {mapred_verifiers:Verifier(missing, Result, 0),
+    {mapred_verifiers:Verifier(missing, Result, 1),
      erlang:round(timer:now_diff(End, Start) / 1000)}.
 
 verify_missing_twice_job(Client, _Bucket, _KeyCount, JobDesc, Verifier) ->
@@ -127,8 +126,7 @@ verify_missing_twice_job(Client, _Bucket, _KeyCount, JobDesc, Verifier) ->
     Start = erlang:now(),
     {ok, Result} = Client:mapred(Inputs, JobDesc, 120000),
     End = erlang:now(),
-    %% below, 0 == length of *existing* inputs
-    {mapred_verifiers:Verifier(missing, Result, 0),
+    {mapred_verifiers:Verifier(missing, Result, 2),
      erlang:round(timer:now_diff(End, Start) / 1000)}.
 
 verify_filter_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->

@@ -73,7 +73,7 @@
  {[{map, {jsfun, <<"Riak.mapValuesJson">>}, none, true}],
   map}}.
 
-{"Link prev",
+{"Link prev", %% Do not change this name!
  {[{link, '_', <<"prev">>,               false},
    {map, {jsanon,
           <<"function(v,d) {

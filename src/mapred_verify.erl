@@ -83,11 +83,21 @@ test_descriptions(TestFile) ->
     end.
 
 verify_job(Client, Bucket, KeyCount, Label, JobDesc, Verifier) ->
-    Tests = [{"discrete entries", fun verify_entries_job/5},
-             {"full bucket mapred", fun verify_bucket_job/5},
-             {"filtered bucket mapred", fun verify_filter_job/5},
-             {"missing object", fun verify_missing_job/5},
-             {"missing object twice", fun verify_missing_twice_job/5}],
+    case re:run(Label, "link prev", [caseless]) of
+        {match, _} ->
+            %% The link phase of a MapReduce query does not return any
+            %% results on a missing key, so it makes checking for the
+            %% presence of notfound in the map results irrelevant.
+            Tests = [{"discrete entries", fun verify_entries_job/5},
+                     {"full bucket mapred", fun verify_bucket_job/5},
+                     {"filtered bucket mapred", fun verify_filter_job/5}];
+        _ ->
+            Tests = [{"discrete entries", fun verify_entries_job/5},
+                     {"full bucket mapred", fun verify_bucket_job/5},
+                     {"filtered bucket mapred", fun verify_filter_job/5},
+                     {"missing object", fun verify_missing_job/5},
+                     {"missing object twice", fun verify_missing_twice_job/5}]
+                end,
     io:format("Running ~p~n", [Label]),
     lists:foldl(
       fun({Type, Fun}, Acc) ->

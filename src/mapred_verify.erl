@@ -33,7 +33,8 @@ do_verification(Props) ->
     case ?PROP(runjobs, Props) of
         true ->
             io:format("Verifying map/reduce jobs~n"),
-            run_jobs(Client, ?BUCKET, KeyCount, ?PROP(testdef, Props));
+            R = run_jobs(Client, ?BUCKET, KeyCount, ?PROP(testdef, Props)),
+            erlang:halt(R);
         false ->
             ok
     end.
@@ -68,10 +69,10 @@ add_links(Obj, BucketName, EntryNum) ->
 
 run_jobs(Client, Bucket, KeyCount, TestFile) ->
     Tests = test_descriptions(TestFile),
-    F = fun({Label, {Job, Verifier}}) ->
-                verify_job(Client, Bucket, KeyCount, Label, Job, Verifier)
+    F = fun({Label, {Job, Verifier}}, Acc) ->
+                Acc + verify_job(Client, Bucket, KeyCount, Label, Job, Verifier)
         end,
-    lists:foreach(F, Tests).
+    lists:foldl(F, 0, Tests).
 
 test_descriptions(TestFile) ->
     case file:consult(TestFile) of
@@ -88,19 +89,20 @@ verify_job(Client, Bucket, KeyCount, Label, JobDesc, Verifier) ->
              {"missing object", fun verify_missing_job/5},
              {"missing object twice", fun verify_missing_twice_job/5}],
     io:format("Running ~p~n", [Label]),
-    lists:foreach(
-      fun({Type, Fun}) ->
+    lists:foldl(
+      fun({Type, Fun}, Acc) ->
               io:format("   Testing ~s...", [Type]),
               case Fun(Client, Bucket, KeyCount, JobDesc, Verifier) of
                   {true, ETime} ->
-                      io:format("OK (~p)~n", [ETime]);
+                      io:format("OK (~p)~n", [ETime]),
+                      Acc;
                   {false, _} ->
-                      io:format("FAIL~n")
+                      io:format("FAIL~n"),
+                      Acc + 1
               end
-      end,
-      Tests).
+      end, 0, Tests).
 
-verify_missing_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
+verify_missing_job(Client, _Bucket, _KeyCount, JobDesc, Verifier) ->
     Inputs = [{<<"mrv_missing">>, <<"mrv_missing">>}],
     Start = erlang:now(),
     {ok, Result} = Client:mapred(Inputs, JobDesc, 120000),

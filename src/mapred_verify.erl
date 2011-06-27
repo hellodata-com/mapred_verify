@@ -137,8 +137,9 @@ verify_filter_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
                [[<<"ends_with">>,<<"5">>]]
               ]],
     Start = erlang:now(),
-    io:format("(non-pipe-FIXME)"),
-    {ok, Result} = Client:mapred_bucket({Bucket,Filter}, JobDesc, 120000),
+    {_, Node, _} = Client,
+    {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred,
+                            [{Bucket,Filter}, JobDesc]),
     End = erlang:now(),
     Inputs = compute_filter(KeyCount, Filter),
     {mapred_verifiers:Verifier(filter, Result, length(Inputs)),

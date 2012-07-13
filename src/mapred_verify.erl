@@ -147,8 +147,9 @@ verify_filter_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
 
 verify_bucket_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
     Start = erlang:now(),
-    io:format("(non-pipe-FIXME)"),
-    {ok, Result} = Client:mapred_bucket(Bucket, JobDesc, 600000),
+    {_, Node, _} = Client,
+    {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred,
+                            [Bucket, JobDesc, 600000]),
     End = erlang:now(),
     {mapred_verifiers:Verifier(bucket, Result, KeyCount),
      erlang:round(timer:now_diff(End, Start) / 1000)}.

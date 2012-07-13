@@ -69,21 +69,21 @@
     <<"include_notfound">>, true}],
   map}}.
 
-%%slf-has-errors-2011-06-07%%{"JS map",
-%%slf-has-errors-2011-06-07%% {[{map, {jsfun, <<"Riak.mapValuesJson">>}, none, true}],
-%%slf-has-errors-2011-06-07%%  map}}.
-%%slf-has-errors-2011-06-07%%
-%%slf-has-errors-2011-06-07%%{"Erlang/JS Link prev",
-%%slf-has-errors-2011-06-07%% {[{link, '_', <<"prev">>,               false},
-%%slf-has-errors-2011-06-07%%   {map, {jsanon,
-%%slf-has-errors-2011-06-07%%          <<"function(v,d) {
-%%slf-has-errors-2011-06-07%%                if (d == 'prev')
-%%slf-has-errors-2011-06-07%%                   return [v.key];
-%%slf-has-errors-2011-06-07%%                else
-%%slf-has-errors-2011-06-07%%                   return [];
-%%slf-has-errors-2011-06-07%%             }">>},
-%%slf-has-errors-2011-06-07%%                                   none, true}],
-%%slf-has-errors-2011-06-07%%  map}}.
+{"JS map",
+ {[{map, {jsfun, <<"Riak.mapValuesJson">>}, none, true}],
+  map}}.
+
+{"Erlang/JS Link prev",
+ {[{link, '_', <<"prev">>,               false},
+   {map, {jsanon,
+          <<"function(v,d) {
+                if (d == 'prev')
+                   return [v.key];
+                else
+                   return [];
+             }">>},
+                                   none, true}],
+  map}}.
 
 {"Erlang/Erlang link prev",
 {[{link, '_', <<"prev">>,               false},
@@ -91,10 +91,9 @@
    <<"include_notfound">>, true}],
  map}}.
 
-% SLF: Hrmm, broken, should figure out why
-%% {"Erlang/Erlang SLF hack 2",
-%% {[{map,    {modfun, riak_kv_mapreduce, map_object_value},
-%%    <<"filter_notfound">>, false},
-%%   {reduce,{modfun, riak_kv_mapreduce, reduce_sort},              none,true}],
-%%  simple}}.
+{"Erlang/Erlang SLF hack 2",
+{[{map,    {modfun, riak_kv_mapreduce, map_object_value},
+   <<"filter_notfound">>, false},
+  {reduce,{modfun, riak_kv_mapreduce, reduce_sort},              none,true}],
+ sorted}}.
 

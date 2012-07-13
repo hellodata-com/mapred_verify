@@ -73,7 +73,7 @@
  {[{map, {jsfun, <<"Riak.mapValuesJson">>}, none, true}],
   map}}.
 
-{"Link prev", %% Do not change this name!
+{"Erlang/JS Link prev", %% Do not remove "Link" from this name!
  {[{link, '_', <<"prev">>,               false},
    {map, {jsanon,
           <<"function(v,d) {
@@ -84,3 +84,16 @@
              }">>},
                                    none, true}],
   map}}.
+
+{"Erlang/Erlang link prev",
+{[{link, '_', <<"prev">>,               false},
+  {map, {modfun, riak_kv_mapreduce, map_object_value},
+   <<"include_notfound">>, true}],
+ map}}.
+
+{"Erlang/Erlang SLF hack 2",
+{[{map,    {modfun, riak_kv_mapreduce, map_object_value},
+   <<"filter_notfound">>, false},
+  {reduce,{modfun, riak_kv_mapreduce, reduce_sort},              none,true}],
+ sorted}}.
+

@@ -1,6 +1,7 @@
 -module(mapred_verify).
 
 -export([main/1]).
+-export([do_verification/1]).
 
 -define(BUCKET, <<"mr_validate">>).
 -define(PROP(K, L), proplists:get_value(K, L)).
@@ -10,7 +11,14 @@ main([]) ->
 main(Args) ->
     case setup_environment(Args) of
         {ok, Props} ->
-            do_verification(Props);
+            case do_verification(Props) of
+                Fails when is_integer(Fails) ->
+                    %% exit 0 on success, non-zero on failure
+                    erlang:halt(Fails);
+                _ ->
+                    %% just shutdown normally when not running tests
+                    ok
+            end;
         error ->
             usage()
     end.
@@ -33,8 +41,7 @@ do_verification(Props) ->
     case ?PROP(runjobs, Props) of
         true ->
             io:format("Verifying map/reduce jobs~n"),
-            R = run_jobs(Client, ?BUCKET, KeyCount, ?PROP(testdef, Props)),
-            erlang:halt(R);
+            run_jobs(Client, ?BUCKET, KeyCount, ?PROP(testdef, Props));
         false ->
             ok
     end.

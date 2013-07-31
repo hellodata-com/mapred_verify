@@ -171,36 +171,27 @@ verify_filter_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
      erlang:round(timer:now_diff(End, Start) / 1000)}.
 
 verify_bucket_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
+    Start = erlang:now(),
     {_, Node, _} = Client,
-    case is_2i_backend(Node, Bucket) of
-        true ->
-            Start = erlang:now(),
-            {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred,
-                                    [Bucket, JobDesc, 600000]),
-            End = erlang:now(),
-            {mapred_verifiers:Verifier(bucket, Result, KeyCount),
-             erlang:round(timer:now_diff(End, Start) / 1000)};
-        false -> {true, 0}
-    end.
+    {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred,
+                            [Bucket, JobDesc, 600000]),
+    End = erlang:now(),
+    {mapred_verifiers:Verifier(bucket, Result, KeyCount),
+     erlang:round(timer:now_diff(End, Start) / 1000)}.
 
 verify_2i_bucket_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
-    {_, Node, _} = Client,
-    case is_2i_backend(Node, Bucket) of
-        true ->
+    Test = fun() ->
             Range = {index, Bucket, <<"$bucket">>, Bucket},
             Start = erlang:now(),
             {_, Node, _} = Client,
             {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Range, JobDesc]),
             End = erlang:now(),
             {mapred_verifiers:Verifier(bucket, Result, KeyCount),
-             erlang:round(timer:now_diff(End, Start) / 1000)};
-        false -> {true, 0}
-    end.
+             erlang:round(timer:now_diff(End, Start) / 1000)} end,
+    run_2i_test(Client, Bucket, Test).
 
 verify_2i_keys_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
-    {_, Node, _} = Client,
-    case is_2i_backend(Node, Bucket) of
-        true ->
+    Test = fun() ->
             KeyStart = entry_num_to_key(1),
             EndKey = key_range_end(KeyCount),
             Range = {index, Bucket, <<"$key">>, KeyStart, EndKey},
@@ -209,51 +200,41 @@ verify_2i_keys_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
             {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Range, JobDesc]),
             End = erlang:now(),
             {mapred_verifiers:Verifier(bucket, Result, KeyCount div 2),
-             erlang:round(timer:now_diff(End, Start) / 1000)};
-        false -> {true, 0}
-    end.
+             erlang:round(timer:now_diff(End, Start) / 1000)} end,
+    run_2i_test(Client, Bucket, Test).
 
 verify_2i_eq_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
-    {_, Node, _} = Client,
-    case is_2i_backend(Node, Bucket) of
-        true ->
+    Test = fun() ->
             Eq = {index, Bucket, <<"field1_bin">>, ?BINDEX1},
             Start = erlang:now(),
             {_, Node, _} = Client,
             {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Eq, JobDesc]),
             End = erlang:now(),
             {mapred_verifiers:Verifier(bucket, Result, KeyCount div 2),
-             erlang:round(timer:now_diff(End, Start) / 1000)};
-        false -> {true, 0}
-    end.
+             erlang:round(timer:now_diff(End, Start) / 1000)} end,
+    run_2i_test(Client, Bucket, Test).
 
 verify_2i_eq_int_job(Client, Bucket, _KeyCount, JobDesc, Verifier) ->
-    {_, Node, _} = Client,
-    case is_2i_backend(Node, Bucket) of
-        true ->
+   Test = fun() ->
             Eq = {index, Bucket, <<"field2_int">>, 1},
             Start = erlang:now(),
             {_, Node, _} = Client,
             {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Eq, JobDesc]),
             End = erlang:now(),
             {mapred_verifiers:Verifier(bucket, Result, 1),
-             erlang:round(timer:now_diff(End, Start) / 1000)};
-        false -> {true, 0}
-    end.
+             erlang:round(timer:now_diff(End, Start) / 1000)} end,
+    run_2i_test(Client, Bucket, Test).
 
 verify_2i_range_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
-    {_, Node, _} = Client,
-    case is_2i_backend(Node, Bucket) of
-        true ->
-            Range = {index, Bucket, <<"field2_int">>, 1, KeyCount div 2},
-            Start = erlang:now(),
-            {_, Node, _} = Client,
-            {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Range, JobDesc]),
-            End = erlang:now(),
-            {mapred_verifiers:Verifier(bucket, Result, KeyCount div 2),
-             erlang:round(timer:now_diff(End, Start) / 1000)};
-        false -> {true, 0}
-    end.
+    Test = fun() ->
+                   Range = {index, Bucket, <<"field2_int">>, 1, KeyCount div 2},
+                   Start = erlang:now(),
+                   {_, Node, _} = Client,
+                   {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Range, JobDesc]),
+                   End = erlang:now(),
+                   {mapred_verifiers:Verifier(bucket, Result, KeyCount div 2),
+                    erlang:round(timer:now_diff(End, Start) / 1000)} end,
+    run_2i_test(Client, Bucket, Test).
 
 verify_entries_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
     Inputs = select_inputs(Bucket, KeyCount),
@@ -263,6 +244,17 @@ verify_entries_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
     End = erlang:now(),
     {mapred_verifiers:Verifier(entries, Result, length(Inputs)),
      erlang:round(timer:now_diff(End, Start) / 1000)}.
+
+%% 2i test runner
+run_2i_test(Client, Bucket, Test) ->
+    {_, Node, _} = Client,
+    case is_2i_backend(Node, Bucket) of
+        true ->
+            Test();
+        false ->
+            io:format("Skipping, not 2i backend"),
+            {true, 0}
+    end.
 
 entry_num_to_key(EntryNum) ->
     list_to_binary(["mrv", integer_to_list(EntryNum)]).

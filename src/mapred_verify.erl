@@ -24,8 +24,8 @@ main(Args) ->
     end.
 
 do_verification(Props) ->
-    {T1, T2, T3} = erlang:now(),
-    random:seed(T1, T2, T3),
+    {T1, T2, T3} = erlang:timestamp(),
+    rand:seed(T1, T2, T3),
     {ok, Client} = riak:client_connect(?PROP(node, Props)),
     KeyCount = ?PROP(keycount, Props),
     case ?PROP(populate, Props) of
@@ -121,20 +121,20 @@ verify_job(Client, Bucket, KeyCount, Label, JobDesc, Verifier) ->
 
 verify_missing_job(Client, _Bucket, _KeyCount, JobDesc, Verifier) ->
     Inputs = [{<<"mrv_missing">>, <<"mrv_missing">>}],
-    Start = erlang:now(),
+    Start = erlang:timestamp(),
     Node = get_client_node(Client),
     {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Inputs, JobDesc]),
-    End = erlang:now(),
+    End = erlang:timestamp(),
     {mapred_verifiers:Verifier(missing, Result, 1),
      erlang:round(timer:now_diff(End, Start) / 1000)}.
 
 verify_missing_twice_job(Client, _Bucket, _KeyCount, JobDesc, Verifier) ->
     Inputs = [{<<"mrv_missing">>, <<"mrv_missing">>},
               {<<"mrv_missing">>, <<"mrv_missing">>}],
-    Start = erlang:now(),
+    Start = erlang:timestamp(),
     Node = get_client_node(Client),
     {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Inputs, JobDesc]),
-    End = erlang:now(),
+    End = erlang:timestamp(),
     {mapred_verifiers:Verifier(missing, Result, 2),
      erlang:round(timer:now_diff(End, Start) / 1000)}.
 
@@ -143,21 +143,21 @@ verify_filter_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
                [[<<"ends_with">>,<<"1">>]],
                [[<<"ends_with">>,<<"5">>]]
               ]],
-    Start = erlang:now(),
+    Start = erlang:timestamp(),
     Node = get_client_node(Client),
     {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred,
                             [{Bucket,Filter}, JobDesc]),
-    End = erlang:now(),
+    End = erlang:timestamp(),
     Inputs = compute_filter(KeyCount, Filter),
     {mapred_verifiers:Verifier(filter, Result, length(Inputs)),
      erlang:round(timer:now_diff(End, Start) / 1000)}.
 
 verify_bucket_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
-    Start = erlang:now(),
+    Start = erlang:timestamp(),
     Node = get_client_node(Client),
     {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred,
                             [Bucket, JobDesc, 600000]),
-    End = erlang:now(),
+    End = erlang:timestamp(),
     {mapred_verifiers:Verifier(bucket, Result, KeyCount),
      erlang:round(timer:now_diff(End, Start) / 1000)}.
 
@@ -168,10 +168,10 @@ get_client_node({_, [Node, _]}) ->
 
 verify_entries_job(Client, Bucket, KeyCount, JobDesc, Verifier) ->
     Inputs = select_inputs(Bucket, KeyCount),
-    Start = erlang:now(),
+    Start = erlang:timestamp(),
     Node = get_client_node(Client),
     {ok, Result} = rpc:call(Node, riak_kv_mrc_pipe, mapred, [Inputs, JobDesc]),
-    End = erlang:now(),
+    End = erlang:timestamp(),
     {mapred_verifiers:Verifier(entries, Result, length(Inputs)),
      erlang:round(timer:now_diff(End, Start) / 1000)}.
 
@@ -181,7 +181,7 @@ entry_num_to_key(EntryNum) ->
 select_inputs(Bucket, KeyCount) ->
     [{Bucket, entry_num_to_key(EntryNum)}
      || EntryNum <- lists:seq(1, KeyCount),
-        random:uniform(2) == 2].
+        rand:uniform(2) == 2].
 
 compute_filter(KeyCount, FilterSpec) ->
     {ok, Filter} = riak_kv_mapred_filters:build_exprs(FilterSpec),
@@ -265,9 +265,9 @@ extract_arg(_Name, _Type, _, Default) ->
     Default.
 
 setup_networking() ->
-    {T1, T2, T3} = erlang:now(),
-    random:seed(T1, T2, T3),
-    Name = "mapred_verify" ++ integer_to_list(random:uniform(100)),
+    {T1, T2, T3} = erlang:timestamp(),
+    rand:seed(T1, T2, T3),
+    Name = "mapred_verify" ++ integer_to_list(rand:uniform(100)),
     {ok, H} = inet:gethostname(),
     {ok, {O1, O2, O3, O4}} = inet:getaddr(H, inet),
     NodeName = list_to_atom(lists:flatten(
